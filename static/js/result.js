@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
         element: document.getElementById('textEditor'),
         spellChecker: false,
         autosave: {
-            enabled: true,
-            uniqueId: "my-editor",
+            enabled: false,
+            uniqueId: "my-editor" + Date.now(),
             delay: 1000
         },
         toolbar: [
@@ -46,7 +46,6 @@ function formatText(type) {
     textarea.focus();
     textarea.setSelectionRange(start, start + formattedText.length);
     updateStats();
-    updatePreview();
 }
 
 function insertText(text, cursorOffset = text.length) {
@@ -171,48 +170,19 @@ function performReplaceAll() {
 
 // Дополнительные функции
 async function downloadText() {
-    const text = document.getElementById('textEditor').value;
-
-    try {
-        // Запрашиваем разрешение на сохранение
-        fileHandle = await window.showSaveFilePicker({
-            suggestedName: 'document.txt',
-            types: [{
-                description: 'Text files',
-                accept: {'text/plain': ['.txt']},
-            }],
-        });
-
-        // Создаем поток для записи
-        const writable = await fileHandle.createWritable();
-        await writable.write(text);
-        await writable.close();
-
-    } catch (err) {
-        if (err.name !== 'AbortError') {
-            console.error('Ошибка:', err);
-            alert('Ошибка сохранения файла');
-        }
-    }
-}
-
-function shareText() {
-    const text = document.getElementById('textEditor').value;
-    if (navigator.share) {
-        navigator.share({
-            title: '{{ file.filename if file else "Текст" }}',
-            text: text.substring(0, 100) + '...',
-            url: window.location.href
-        });
-    } else {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            showMessage('success', 'Ссылка скопирована в буфер обмена');
-        });
-    }
-}
-
-function changeFontSize(size) {
-    document.getElementById('textEditor').style.fontSize = size + 'px';
+    const filename = prompt("Enter full filename: ");
+    let form = document.createElement('form');
+    form.action = '/download';
+    form.method = 'POST';
+    form.style.display = 'none';
+    form.innerHTML = '<textarea id="TempTextEditor" name="file"></textarea>'
+    form.innerHTML += '<input id="TempSaveInput" name="filename"/>'
+    document.getElementById('textEditor').appendChild(form);
+    document.getElementById('TempTextEditor').value =
+        document.getElementById('textEditor').value;
+    document.getElementById('TempSaveInput').value = filename;
+    form.submit();
+    form.remove();
 }
 
 // Вспомогательные функции
@@ -239,13 +209,4 @@ function showMessage(type, text) {
             alertDiv.remove();
         }
     }, 5000);
-}
-
-// Обновление статистики файла
-function updateFileStats(stats) {
-    // Обновляем информацию о файле если есть
-    const sizeElement = document.querySelector('.file-meta .meta-item:nth-child(2)');
-    if (sizeElement && stats.size) {
-        sizeElement.innerHTML = `<i class="bi bi-hdd me-1"></i>Размер: ${formatFileSize(stats.size)}`;
-    }
 }

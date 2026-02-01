@@ -196,6 +196,10 @@ body {
     100% { opacity: 0; display: none; }
 }
 
+.card-body {
+    max-width: 200px;
+}
+
 /* Стили для подсветки синтаксиса (базовая) */
 .keyword { color: #0077cc; font-weight: bold; }
 .string { color: #dd1144; }

@@ -24,40 +24,6 @@
                 </div>
             </div>
 
-        <!-- Быстрые действия -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-lightning me-2"></i>Быстрые действия
-                    </div>
-                    <div class="card-body">
-                        <button class="btn btn-outline-primary w-100 mb-2" onclick="downloadText()">
-                            <i class="bi bi-download me-1"></i>Скачать файл
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-info-circle me-2"></i>Информация
-                    </div>
-                    <div class="card-body">
-                        <h6>Горячие клавиши:</h6>
-                        <ul class="small">
-                            <li><kbd>Ctrl + S</kbd> - Сохранить файл</li>
-                            <li><kbd>Ctrl + F</kbd> - Найти текст</li>
-                            <li><kbd>Ctrl + H</kbd> - Заменить текст</li>
-                            <li><kbd>Ctrl + Z</kbd> - Отменить действие</li>
-                            <li><kbd>Ctrl + Y</kbd> - Повторить действие</li>
-                            <li><kbd>Ctrl + B</kbd> - Жирный текст</li>
-                            <li><kbd>Ctrl + I</kbd> - Курсив</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
             <!-- Контент вкладок -->
             <div class="tab-content mx-3 mb-3" id="editorTabContent">
                 <!-- Вкладка редактирования -->
@@ -74,17 +40,10 @@
                             <i class="bi bi-arrow-left-right"></i> Заменить
                         </button>
                         <div class="vr"></div>
-                        <div class="input-group" style="width: 200px;">
-                            <span class="input-group-text">
-                                <i class="bi bi-fonts"></i>
-                            </span>
-                            <select class="form-select" id="fontSize" onchange="changeFontSize(this.value)">
-                                <option value="14">14px</option>
-                                <option value="16" selected>16px</option>
-                                <option value="18">18px</option>
-                                <option value="20">20px</option>
-                                <option value="24">24px</option>
-                            </select>
+                        <div class="card-body">
+                            <button class="btn btn-outline-primary w-100 mb-2" onclick="downloadText()">
+                                <i class="bi bi-download me-1"></i>Скачать файл
+                            </button>
                         </div>
                     </div>
 
