@@ -1,0 +1,49 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "dock"
+    },
+    {
+      "id": 1,
+      "name": "end"
+    },
+    {
+      "id": 2,
+      "name": "mail"
+    },
+    {
+      "id": 3,
+      "name": "main"
+    },
+    {
+      "id": 4,
+      "name": "people"
+    },
+    {
+      "id": 5,
+      "name": "sh"
+    },
+    {
+      "id": 6,
+      "name": "sql"
+    },
+    {
+      "id": 7,
+      "name": "start"
+    },
+    {
+      "id": 8,
+      "name": "way"
+    },
+    {
+      "id": 9,
+      "name": "way_end"
+    }
+  ],
+  "info": {
+    "year": 2026,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
