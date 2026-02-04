@@ -9,6 +9,8 @@ class TreeNode:
         self.value = value
         self.parent = parent
         self.children = children
+        if not self.children:
+            self.children = []
 
 
 class Tree:
