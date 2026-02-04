@@ -53,22 +53,26 @@ class MyTokenType(Enum):
     END = 4
     EXECUTOR = 5
     ACTION = 6
-    BRANCHING = 7 # triangles
+    BRANCHING = 7
     DOCUMENT = 8
     MAIL = 9
-    MAIL_ACTION = 10
-    TEXT = 11
-    OTHERS = 12
+    TEXT = 10
+    OTHERS = 11
+
+    def __eq__(self, other):
+        return self.value == other.value
 
 
 class MyToken:
     def __init__(self,
                  rect: MyBaseShape,
                  typename: MyTokenType,
-                 text: list[str]|None):
+                 text: list[str]|None = None,
+                 executor: str|None = None):
         self.rect = rect
         self.typename = typename
         self.text = text
+        self.executor = executor
         if not self.text:
             self.text = []
 
@@ -76,7 +80,7 @@ class MyToken:
         resDist = 10 ** 10
         resItem = None
 
-        print(items)
+        # print(items)
 
         for item in items:
             if f(item) == self:
@@ -90,7 +94,7 @@ class MyToken:
         return resItem
 
     def __str__(self):
-        return f"{self.rect} {self.typename} {self.text}"
+        return f"{self.rect} {self.typename} {self.text} {self.executor}"
 
     def __repr__(self):
         return self.__str__()

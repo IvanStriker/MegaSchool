@@ -18,7 +18,9 @@ def divideTokensByTypes(tokens: list[MyToken]) -> list[list[MyToken]]:
                               MyTokenType.BRANCHING,
                               MyTokenType.START,
                               MyTokenType.END,
-                              MyTokenType.TEXT]:
+                              MyTokenType.TEXT,
+                              MyTokenType.MAIL,
+                              MyTokenType.DOCUMENT]:
             res[token.typename != MyTokenType.TEXT].append(token)
         elif token.typename in [MyTokenType.ARROW, MyTokenType.ARROW_HEAD]:
             res[2].append(token)
@@ -33,6 +35,38 @@ def pinText(tokens: list[MyToken]):
             text.getClosest(arrows).text.append(text.text[0])
         else:
             text.getClosest(classics).text.append(text.text[0])
+
+    special = [token for token in tokens
+               if token.typename in [MyTokenType.DOCUMENT, MyTokenType.MAIL,
+                                     MyTokenType.START, MyTokenType.END]]
+    mapping = {
+        MyTokenType.DOCUMENT.value: "Работа с документом",
+        MyTokenType.MAIL.value: "Работа с письмом",
+        MyTokenType.START.value: "Начало",
+        MyTokenType.END.value: "Конец"
+    }
+
+    for token in special:
+        if not token.text:
+            token.text.append(mapping[token.typename.value])
+
+
+def findExecutor(token: MyToken, executors: list[MyToken]) -> str|None:
+    y = token.rect.leftBottom.y + token.rect.height
+
+    for executor in executors:
+        if executor.rect.leftBottom.y < y <= executor.rect.leftBottom.y + executor.rect.height:
+            return executor.text[0]
+
+    return None
+
+
+def pinExecutors(tokens: list[MyToken]):
+    executors = [token for token in tokens if token.typename == MyTokenType.EXECUTOR]
+    others = [token for token in tokens
+              if token.typename not in [MyTokenType.EXECUTOR, MyTokenType.ARROW, MyTokenType.ARROW_HEAD]]
+    for token in others:
+        token.executor = findExecutor(token, executors)
 
 
 def pinArrows(tokens: list[MyToken]):
@@ -51,22 +85,22 @@ def pinArrows(tokens: list[MyToken]):
         arrows = [arrow for arrow in outComingArrows
                   if arrow.rect.distanceTo(tokenAction.rect) <= 5]
         arrows = sorted(arrows, key=lambda x: tokenAction.rect.distanceTo(x.rect))
-        print(f"ACTION: {action}")
+        # print(f"ACTION: {action}")
         for i in range(len(arrows)):
             if i >= len(arrows):
                 break
             arrow = arrows[i]
-            print(f"FIRST ARROW: {arrow}")
+            # print(f"FIRST ARROW: {arrow}")
             outComingArrows.remove(arrow)
             allArrows.remove(arrow)
             while (nextArrow := arrow.getClosest(allArrows)).typename != MyTokenType.ARROW_HEAD:
-                print(f"NEXT ARROW: {nextArrow}")
+                # print(f"NEXT ARROW: {nextArrow}")
                 arrow.text += nextArrow.text
                 allArrows.remove(nextArrow)
                 outComingArrows.remove(nextArrow)
                 if nextArrow in arrows:
                     arrows.remove(nextArrow)
-            print(f"NEXT ARROW (ENDED): {nextArrow}")
+            # print(f"NEXT ARROW (ENDED): {nextArrow}")
             arrow.text += nextArrow.text
             allArrows.remove(nextArrow)
             if nextArrow in arrows:
@@ -84,14 +118,15 @@ def pinArrows(tokens: list[MyToken]):
         if not i in temp:
             roots.append(i)
 
-    print(invActions)
+    # print(invActions)
 
     return invActions, roots
 
 
-
 def make(tokens: list[MyToken]):
     pinText(tokens)
-    tokens = list(filter(lambda x: x.typename != MyTokenType.TEXT, tokens))
-    return *pinArrows(tokens), tokens
+    pinExecutors(tokens)
+    tokens = list(filter(lambda x: x.typename not in [MyTokenType.TEXT, MyTokenType.EXECUTOR], tokens))
+    res = [*pinArrows(tokens), tokens]
+    return res
 

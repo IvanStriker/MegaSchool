@@ -1,24 +1,27 @@
-import sys
-
-from alg_utils.alg_writer import constructFromTree
+from alg_utils.alg_writer import constructFromTokens
 from my_token import MyToken, MyBaseShape, MyPoint, MyTokenType
 from tree_maker import make
 
 
 tokens = [
     MyToken(
+        MyBaseShape(MyPoint(17, 9), MyPoint(18, 18)),
+        MyTokenType.EXECUTOR,
+        ["IVAN"]
+    ),
+    MyToken(
+        MyBaseShape(MyPoint(17, 9), MyPoint(18, 0)),
+        MyTokenType.EXECUTOR,
+        ["VLAD"]
+    ),
+    MyToken(
         MyBaseShape(MyPoint(1, 0), MyPoint(3, 2)),
-        MyTokenType.ACTION,
+        MyTokenType.MAIL,
         None
     ),
     MyToken(
-        MyBaseShape(MyPoint(2, 1), MyPoint(3, 2)),
-        MyTokenType.TEXT,
-        ["Действие 1"]
-    ),
-    MyToken(
         MyBaseShape(MyPoint(6, 1), MyPoint(7, 4)),
-        MyTokenType.ACTION,
+        MyTokenType.DOCUMENT,
         None
     ),
     MyToken(
@@ -214,10 +217,10 @@ def draw():
     plt.show()
 
 def testTree():
-    global tokens
-    tree, roots, tokens = make(tokens)
-    constructFromTree(tree, roots, "output.txt")
+    # global tokens
+    # tree, roots, tokens = make(tokens)
+    constructFromTokens(tokens, "output.txt")
+
 
 testTree()
-
 draw()
