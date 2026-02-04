@@ -1,0 +1,209 @@
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #166088;
+    --accent-color: #17a2b8;
+    --light-bg: #f8f9fa;
+    --dark-text: #212529;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding-bottom: 50px;
+}
+
+.editor-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+.editor-header {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 20px 30px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.file-info {
+    background: var(--light-bg);
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.editor-toolbar {
+    background: #f8f9fa;
+    padding: 10px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-toolbar {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-toolbar:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.text-editor {
+    min-height: 500px;
+    padding: 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    line-height: 1.6;
+    border: none;
+    outline: none;
+    resize: vertical;
+    width: 100%;
+    background: #fefefe;
+}
+
+.text-editor:focus {
+    background: #fff;
+}
+
+.text-preview {
+    min-height: 500px;
+    padding: 20px;
+    background: #fefefe;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-y: auto;
+}
+
+.stats-bar {
+    background: var(--light-bg);
+    padding: 10px 20px;
+    border-top: 1px solid #dee2e6;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    background: white;
+}
+
+.nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    margin-bottom: -1px;
+}
+
+.nav-tabs .nav-link.active {
+    background: white;
+    border-color: #dee2e6 #dee2e6 white;
+}
+
+.btn-save {
+    background: linear-gradient(90deg, #28a745, #20c997);
+    border: none;
+    padding: 10px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-cancel {
+    background: linear-gradient(90deg, #6c757d, #495057);
+    border: none;
+    padding: 10px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.file-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    background: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+}
+
+.char-count {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.word-count {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.line-count {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.alert-auto-hide {
+    animation: fadeOut 5s forwards;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+.card-body {
+    max-width: 200px;
+}
+
+/* Стили для подсветки синтаксиса (базовая) */
+.keyword { color: #0077cc; font-weight: bold; }
+.string { color: #dd1144; }
+.comment { color: #999988; font-style: italic; }
+.function { color: #990000; font-weight: bold; }
+.number { color: #009999; }
+.operator { color: #d14; }
