@@ -1,6 +1,6 @@
 import uuid
 import os
-from io import StringIO, BytesIO
+from io import BytesIO
 
 from flask import Flask, render_template, redirect, url_for, request, session, send_file
 
