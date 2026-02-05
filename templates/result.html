@@ -7,6 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Include Quill stylesheet -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+      rel="stylesheet"
+    />
     <link href="{{ url_for('static', filename='css/result.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -32,15 +37,8 @@
                 <!-- Вкладка редактирования -->
                 <div class="tab-pane fade show active" id="edit" role="tabpanel">
                     <div class="editor-toolbar">
-                        <button type="button" class="btn-toolbar" onclick="insertText('```\n\n```', 4)">
-                            <i class="bi bi-code-square"></i> Код
-                        </button>
-                        <div class="vr"></div>
                         <button type="button" class="btn-toolbar" onclick="findText()" title="Найти">
                             <i class="bi bi-search"></i> Найти
-                        </button>
-                        <button type="button" class="btn-toolbar" onclick="replaceText()" title="Заменить">
-                            <i class="bi bi-arrow-left-right"></i> Заменить
                         </button>
                         <div class="vr"></div>
                         <div class="card-body">
@@ -50,16 +48,14 @@
                         </div>
                     </div>
 
-                    <textarea
-                        class="text-editor"
-                        id="textEditor"
-                        placeholder="Начните вводить текст здесь..."
-                        autofocus
-                        oninput="updateStats()"
-                    >{{ file }}</textarea>
+                    <!-- Create the editor container -->
+                    <div id="editor">
+
+                    </div>
                 </div>
 
             </div>
+        </div>
 
 <!--            &lt;!&ndash; Статистика &ndash;&gt;-->
 <!--            <div class="stats-bar">-->
@@ -90,7 +86,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Найти:</label>
+                        <label class="form-label">Найти: </label>
                         <input type="text" class="form-control" id="findInput">
                     </div>
                     <div class="mb-3">
@@ -106,7 +102,6 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-primary" onclick="performFind()">Найти</button>
                     <button type="button" class="btn btn-success" onclick="performReplace()">Заменить</button>
                     <button type="button" class="btn btn-warning" onclick="performReplaceAll()">Заменить все</button>
                 </div>
@@ -115,12 +110,14 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
 
-    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script src="{{ url_for('static', filename='js/result.js') }}"></script>
+    <script>
+        quill.setText(`{{ file }}`);
+    </script>
 </body>
 </html>

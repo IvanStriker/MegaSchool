@@ -82,8 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        fileInput.style.display = 'block';
-
         // Показываем индикатор загрузки
         loadingSpinner.style.display = 'inline-block';
         submitBtn.disabled = true;

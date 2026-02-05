@@ -1,6 +1,7 @@
-from alg_utils.alg_writer import constructFromTokens
-from my_token import MyToken, MyBaseShape, MyPoint, MyTokenType
-from tree_maker import make
+from alg_utils.alg_writer import constructFromTokens, constructFromTree
+from alg_utils.tree_maker import makeTree
+from alg_utils.my_token import MyToken, MyBaseShape, MyPoint, MyTokenType
+from model import test_model
 
 
 tokens = [
@@ -165,14 +166,14 @@ def draw():
          i.rect.width,
          i.rect.height,
          'red',
-         i.text)
+         i.typename)
         for i in tokens
     ]
 
     fig, ax = plt.subplots(figsize=(120, 100))
     ax.grid(True, linestyle='--', alpha=0.6)
-    ax.set_xlim(0, 200)
-    ax.set_ylim(0, 150)
+    ax.set_xlim(0, 3000)
+    ax.set_ylim(0, 2000)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_title('Множество прямоугольников на сетке', fontsize=10)
@@ -217,9 +218,22 @@ def draw():
     plt.show()
 
 def testTree():
-    # global tokens
+    global tokens
     # tree, roots, tokens = make(tokens)
-    constructFromTokens(tokens, "output.txt")
+    test_model.prepareModel()
+    res = test_model.scan("./model/test_images/5.png")
+    tokens = []
+    for token in res:
+        tokens.append(MyToken(
+            MyBaseShape(
+                MyPoint(*token["coord"][:2]),
+                MyPoint(*token["coord"][2:4])
+            ),
+            MyTokenType(int(token["class"])),
+            [token["text"]] if len(token["text"]) else []
+        ))
+    # tree, roots, tokens = make(tokens)
+    # constructFromTree(tree, roots, "output.txt")
 
 
 testTree()

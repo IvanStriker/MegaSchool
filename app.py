@@ -4,6 +4,8 @@ from io import BytesIO
 
 from flask import Flask, render_template, redirect, url_for, request, session, send_file
 
+from model.test_model import prepareModel
+from alg_utils.alg_writer import constructFromImage
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "uploads"
@@ -14,14 +16,18 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 @app.route("/", methods=["GET"])
 def index():
+    if "result" in session:
+        os.remove(session["result"])
     return render_template("index.html")
 
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
     file = request.files["file"]
-    file.save(os.path.join(app.config["UPLOAD_FOLDER"], file.filename))
-    session["result"] = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
+    path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
+    file.save(path)
+    constructFromImage(path, "./writtenAlgs/1.md")
+    session["result"] = "./writtenAlgs/1.md"
     return redirect(url_for("read_result"))
 
 
@@ -48,4 +54,5 @@ def download_file():
 
 
 if __name__ == "__main__":
+    prepareModel()
     app.run()
