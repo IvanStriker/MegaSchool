@@ -1,6 +1,6 @@
 from alg_utils.my_token import MyTokenType, MyToken
 from alg_utils.tree_maker import makeTree
-from model import test_model
+from model import scheme_scanner
 from alg_utils.my_token import *
 
 """
@@ -61,9 +61,9 @@ def constructFromTokens(tokens: list[MyToken], path: str):
 
 
 def constructFromImage(inputPath: str, outputPath2: str):
-    if not test_model.model:
-        test_model.prepareModel()
-    res = test_model.scan(inputPath)
+    if not scheme_scanner.model:
+        scheme_scanner.prepareModel()
+    res = scheme_scanner.scan(inputPath)
     tokens = []
     for token in res:
         tokens.append(MyToken(
