@@ -1,9 +1,10 @@
 from alg_utils.alg_writer import constructFromTokens, constructFromTree
 from alg_utils.tree_maker import makeTree
 from alg_utils.my_token import MyToken, MyBaseShape, MyPoint, MyTokenType
-from model import test_model
+from model import scheme_scanner
 
 
+# Tokens for testing
 tokens = [
     MyToken(
         MyBaseShape(MyPoint(17, 9), MyPoint(18, 18)),
@@ -148,6 +149,7 @@ tokens = [
 ]
 
 
+# Increasing the scale
 for token in tokens:
     token.rect.leftBottom.x *= 10
     token.rect.leftBottom.y *= 10
@@ -156,6 +158,10 @@ for token in tokens:
 
 
 def draw():
+    """
+    using matplotlib to draw tokens
+    """
+
     import matplotlib.pyplot as plt
     import matplotlib.patches as patches
 
@@ -217,11 +223,22 @@ def draw():
     plt.tight_layout()
     plt.show()
 
+
 def testTree():
+    """
+    1. Takes scheme from ../model/test_images/7.jpg
+    2. Processes it using YOLO
+    3. Receives tokens
+    4. Constructs a tree of tokens' dependencies
+    5. Replaces global variable 'tokens' with the one,
+        got during tree creation
+    6. Constructs a text algorithm from the tree
+    """
+
     global tokens
     # tree, roots, tokens = make(tokens)
-    test_model.prepareModel()
-    res = test_model.scan("./model/test_images/5.png")
+    scheme_scanner.prepareModel()
+    res = scheme_scanner.scan("../model/test_images/7.jpg")
     tokens = []
     for token in res:
         tokens.append(MyToken(
@@ -232,8 +249,8 @@ def testTree():
             MyTokenType(int(token["class"])),
             [token["text"]] if len(token["text"]) else []
         ))
-    # tree, roots, tokens = make(tokens)
-    # constructFromTree(tree, roots, "output.txt")
+    tree, roots, tokens = makeTree(tokens)
+    constructFromTree(tree, roots, "output.txt")
 
 
 testTree()
