@@ -7,12 +7,12 @@ from model import scheme_scanner
 # Tokens for testing
 tokens = [
     MyToken(
-        MyBaseShape(MyPoint(17, 9), MyPoint(18, 18)),
+        MyBaseShape(MyPoint(20, 9), MyPoint(21, 18)),
         MyTokenType.EXECUTOR,
         ["IVAN"]
     ),
     MyToken(
-        MyBaseShape(MyPoint(17, 9), MyPoint(18, 0)),
+        MyBaseShape(MyPoint(20, 9), MyPoint(21, 0)),
         MyTokenType.EXECUTOR,
         ["VLAD"]
     ),
@@ -172,14 +172,14 @@ def draw():
          i.rect.width,
          i.rect.height,
          'red',
-         i.typename)
+         i.typename.value)
         for i in tokens
     ]
 
     fig, ax = plt.subplots(figsize=(120, 100))
     ax.grid(True, linestyle='--', alpha=0.6)
-    ax.set_xlim(0, 3000)
-    ax.set_ylim(0, 2000)
+    ax.set_xlim(-5, 260)
+    ax.set_ylim(-5, 200)
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_title('Множество прямоугольников на сетке', fontsize=10)
@@ -215,10 +215,6 @@ def draw():
         ax.text(x, y, f'({x},{y})', fontsize=8, ha='right', va='top')
         ax.text(x + w, y + h, f'({x + w},{y + h})', fontsize=8, ha='left', va='bottom')
 
-    # Легенда
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, loc='upper right')
-
     ax.set_aspect('equal')
     plt.tight_layout()
     plt.show()
@@ -253,5 +249,6 @@ def testTree():
     constructFromTree(tree, roots, "output.txt")
 
 
-testTree()
+# testTree()
 draw()
+constructFromTokens(tokens, "output.txt")
