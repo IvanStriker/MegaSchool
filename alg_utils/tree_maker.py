@@ -1,8 +1,7 @@
 import sys
 from queue import Queue
 
-from my_token import *
-from tree import *
+from alg_utils.my_token import *
 
 """
 1. Pin text fields to proper tokens.
@@ -20,7 +19,8 @@ def divideTokensByTypes(tokens: list[MyToken]) -> list[list[MyToken]]:
                               MyTokenType.END,
                               MyTokenType.TEXT,
                               MyTokenType.MAIL,
-                              MyTokenType.DOCUMENT]:
+                              MyTokenType.DOCUMENT,
+                              MyTokenType.EXECUTOR]:
             res[token.typename != MyTokenType.TEXT].append(token)
         elif token.typename in [MyTokenType.ARROW, MyTokenType.ARROW_HEAD]:
             res[2].append(token)
@@ -29,12 +29,18 @@ def divideTokensByTypes(tokens: list[MyToken]) -> list[list[MyToken]]:
 
 def pinText(tokens: list[MyToken]):
     texts, classics, arrows = divideTokensByTypes(tokens)
+    print([i for i in classics if i.typename == MyTokenType.EXECUTOR])
 
     for text in texts:
+        if not text.text:
+            continue
         if text.text[0].lower() in ["да", "нет", "yes", "no"]:
             text.getClosest(arrows).text.append(text.text[0])
         else:
-            text.getClosest(classics).text.append(text.text[0])
+            got = text.getClosest(classics)
+            print(got.typename, file=sys.stderr)
+            got.text.append(text.text[0])
+            print(got.text, file=sys.stderr)
 
     special = [token for token in tokens
                if token.typename in [MyTokenType.DOCUMENT, MyTokenType.MAIL,
@@ -76,6 +82,7 @@ def pinArrows(tokens: list[MyToken]):
     actions = [tokens[token] for token in range(len(tokens)) if tokens[token].typename not in
                   [MyTokenType.TEXT, MyTokenType.ARROW, MyTokenType.ARROW_HEAD]]
     actions = [[actions[token], [], token] for token in range(len(actions))]
+    arrowHeads = [token for token in allArrows if token.typename == MyTokenType.ARROW_HEAD]
     invActions: list[None|list] = [None] * len(actions)
     for action in actions:
         invActions[action[2]] = action + [[]]
@@ -83,24 +90,27 @@ def pinArrows(tokens: list[MyToken]):
     for action in actions:
         tokenAction = action[0]
         arrows = [arrow for arrow in outComingArrows
-                  if arrow.rect.distanceTo(tokenAction.rect) <= 5]
+                  if arrow.rect.distanceTo(tokenAction.rect) <= 10]
         arrows = sorted(arrows, key=lambda x: tokenAction.rect.distanceTo(x.rect))
-        # print(f"ACTION: {action}")
+        print(f"ACTION: {action}")
         for i in range(len(arrows)):
             if i >= len(arrows):
                 break
             arrow = arrows[i]
-            # print(f"FIRST ARROW: {arrow}")
+            arrowHead = arrow.getClosest(arrowHeads)
+            if arrowHead.rect.distanceTo(tokenAction.rect) < 10:
+                continue
+            print(f"FIRST ARROW: {arrow}")
             outComingArrows.remove(arrow)
             allArrows.remove(arrow)
             while (nextArrow := arrow.getClosest(allArrows)).typename != MyTokenType.ARROW_HEAD:
-                # print(f"NEXT ARROW: {nextArrow}")
+                print(f"NEXT ARROW: {nextArrow}")
                 arrow.text += nextArrow.text
                 allArrows.remove(nextArrow)
                 outComingArrows.remove(nextArrow)
                 if nextArrow in arrows:
                     arrows.remove(nextArrow)
-            # print(f"NEXT ARROW (ENDED): {nextArrow}")
+            print(f"NEXT ARROW (ENDED): {nextArrow}")
             arrow.text += nextArrow.text
             allArrows.remove(nextArrow)
             if nextArrow in arrows:
@@ -118,12 +128,12 @@ def pinArrows(tokens: list[MyToken]):
         if not i in temp:
             roots.append(i)
 
-    # print(invActions)
+    print(invActions)
 
     return invActions, roots
 
 
-def make(tokens: list[MyToken]):
+def makeTree(tokens: list[MyToken]):
     pinText(tokens)
     pinExecutors(tokens)
     tokens = list(filter(lambda x: x.typename not in [MyTokenType.TEXT, MyTokenType.EXECUTOR], tokens))

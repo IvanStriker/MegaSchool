@@ -39,6 +39,33 @@ class MyBaseShape:
 
         return dist
 
+    def getSharedPartWith(self, other: "MyBaseShape") -> float:
+        dist = 0
+
+        # 1. x
+        l = min(self, other, key=lambda x: x.leftBottom.x)
+        r = max(self, other, key=lambda x: x.leftBottom.x)
+
+        dist = r.leftBottom.x - l.leftBottom.x - l.width
+
+        if dist >= 0:
+            return 0
+
+        dist *= -1
+
+        # 1. y
+        d = min(self, other, key=lambda x: x.leftBottom.y)
+        u = max(self, other, key=lambda x: x.leftBottom.y)
+
+        dist2 = u.leftBottom.y - d.leftBottom.y - d.height
+
+        if dist2 >= 0:
+            return 0
+
+        dist2 *= -1
+
+        return dist * dist2
+
     def __str__(self):
         return f"{self.leftBottom} {self.width} {self.height}"
 
@@ -47,17 +74,17 @@ class MyBaseShape:
 
 
 class MyTokenType(Enum):
-    ARROW = 1
-    ARROW_HEAD = 2
-    START = 3
-    END = 4
-    EXECUTOR = 5
-    ACTION = 6
-    BRANCHING = 7
-    DOCUMENT = 8
-    MAIL = 9
-    TEXT = 10
-    OTHERS = 11
+    DOCUMENT = 0
+    END = 1
+    MAIL = 2
+    ACTION = 3
+    EXECUTOR = 4
+    BRANCHING = 5
+    OTHERS = 9
+    START = 7
+    TEXT = 8
+    ARROW = 10
+    ARROW_HEAD = 11
 
     def __eq__(self, other):
         return self.value == other.value
@@ -80,14 +107,15 @@ class MyToken:
         resDist = 10 ** 10
         resItem = None
 
-        # print(items)
+        print(items)
 
         for item in items:
             if f(item) == self:
                 continue
             curDist = self.rect.distanceTo(f(item).rect)
 
-            if curDist < resDist:
+            if curDist < resDist or curDist == resDist and \
+                    self.rect.getSharedPartWith(f(resItem).rect) < self.rect.getSharedPartWith(f(item).rect):
                 resDist = curDist
                 resItem = item
 

@@ -1,83 +1,14 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var easyMDE = new EasyMDE({
-        element: document.getElementById('textEditor'),
-        spellChecker: false,
-        autosave: {
-            enabled: false,
-            uniqueId: "my-editor" + Date.now(),
-            delay: 1000
-        },
-        toolbar: [
-            "bold", "italic", "heading", "|",
-            "quote", "unordered-list", "ordered-list", "|",
-            "link", "image", "|",
-            "preview", "side-by-side", "fullscreen", "|",
-            "guide"
-        ]
-    });
-    // Инициализация
-    updateStats();
+let quill = new Quill('#editor', {
+  modules: {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ['bold', 'italic', 'underline'],
+      ['image', 'code-block'],
+    ],
+  },
+  placeholder: 'Compose an epic...',
+  theme: 'snow', // or 'bubble'
 });
-
-// Функции форматирования
-function formatText(type) {
-    const textarea = document.getElementById('textEditor');
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-
-    let formattedText = selectedText;
-    switch(type) {
-        case 'bold':
-            formattedText = `**${selectedText}**`;
-            break;
-        case 'italic':
-            formattedText = `*${selectedText}*`;
-            break;
-        case 'underline':
-            formattedText = `<u>${selectedText}</u>`;
-            break;
-    }
-
-    textarea.value = textarea.value.substring(0, start) +
-                    formattedText +
-                    textarea.value.substring(end);
-
-    textarea.focus();
-    textarea.setSelectionRange(start, start + formattedText.length);
-    updateStats();
-}
-
-function insertText(text, cursorOffset = text.length) {
-    const textarea = document.getElementById('textEditor');
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-
-    textarea.value = textarea.value.substring(0, start) +
-                    text +
-                    textarea.value.substring(end);
-
-    textarea.focus();
-    const newPos = start + cursorOffset;
-    textarea.setSelectionRange(newPos, newPos);
-    updateStats();
-}
-
-// Статистика
-function updateStats() {
-    const text = document.getElementById('textEditor').value;
-
-    // Символы
-    document.getElementById('charCount').textContent = text.length;
-
-    // Слова
-    const words = text.trim().split(/\s+/).filter(word => word.length > 0);
-    document.getElementById('wordCount').textContent = words.length;
-
-    // Строки
-    const lines = text.split('\n').filter(line => line.trim().length > 0);
-    document.getElementById('lineCount').textContent = lines.length || 1;
-}
 
 // Поиск и замена
 function findText() {
@@ -93,13 +24,13 @@ function replaceText() {
 }
 
 function performFind() {
-    const textarea = document.getElementById('textEditor');
+    const textarea = document.getElementById('editor');
     const findText = document.getElementById('findInput').value;
     const caseSensitive = document.getElementById('caseSensitive').checked;
 
     if (!findText) return;
 
-    const content = textarea.value;
+    const content = quill.getText();
     let searchContent = content;
     let searchText = findText;
 
@@ -120,38 +51,37 @@ function performFind() {
 }
 
 function performReplace() {
-    const textarea = document.getElementById('textEditor');
+    const textarea = document.getElementById('editor');
     const findText = document.getElementById('findInput').value;
     const replaceText = document.getElementById('replaceInput').value;
 
     if (!findText) return;
 
-    const selectedText = textarea.value.substring(
+    const selectedText = quill.getText().substring(
         textarea.selectionStart,
         textarea.selectionEnd
     );
 
     if (selectedText === findText) {
-        textarea.value = textarea.value.substring(0, textarea.selectionStart) +
+        quill.setText(textarea.value.substring(0, textarea.selectionStart) +
                        replaceText +
-                       textarea.value.substring(textarea.selectionEnd);
+                       textarea.value.substring(textarea.selectionEnd));
         performFind(); // Найти следующее вхождение
     } else {
         performFind();
     }
 
-    updateStats();
 }
 
 function performReplaceAll() {
-    const textarea = document.getElementById('textEditor');
+    const textarea = document.getElementById('editor');
     const findText = document.getElementById('findInput').value;
     const replaceText = document.getElementById('replaceInput').value;
     const caseSensitive = document.getElementById('caseSensitive').checked;
 
     if (!findText) return;
 
-    let content = textarea.value;
+    let content = quill.getText();
     const flags = caseSensitive ? 'g' : 'gi';
     const regex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags);
 
@@ -162,8 +92,7 @@ function performReplaceAll() {
     }
 
     if (confirm(`Заменить все вхождения (${matches.length})?`)) {
-        textarea.value = content.replace(regex, replaceText);
-        updateStats();
+        quill.setText(content.replace(regex, replaceText));
         alert(`Заменено ${matches.length} вхождений`);
     }
 }
@@ -177,9 +106,9 @@ async function downloadText() {
     form.style.display = 'none';
     form.innerHTML = '<textarea id="TempTextEditor" name="file"></textarea>'
     form.innerHTML += '<input id="TempSaveInput" name="filename"/>'
-    document.getElementById('textEditor').appendChild(form);
+    document.getElementById('editor').appendChild(form);
     document.getElementById('TempTextEditor').value =
-        document.getElementById('textEditor').value;
+        quill.getText();
     document.getElementById('TempSaveInput').value = filename;
     form.submit();
     form.remove();
