@@ -4,7 +4,7 @@ from io import BytesIO
 
 from flask import Flask, render_template, redirect, url_for, request, session, send_file
 
-from model.test_model import prepareModel
+from model.scheme_scanner import prepareModel
 from alg_utils.alg_writer import constructFromImage
 
 app = Flask(__name__)
