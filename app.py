@@ -16,6 +16,12 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 @app.route("/", methods=["GET"])
 def index():
+    """
+    Renders the main page and cleans up previous session results.
+
+    Returns:
+        html for main page
+    """
     if "result" in session:
         os.remove(session["result"])
     return render_template("index.html")
@@ -23,6 +29,11 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
+    """Processes uploaded image files and generates algorithmic markdown.
+
+    Returns:
+        HTTP redirect to the read_result route.
+    """
     file = request.files["file"]
     path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
     file.save(path)
@@ -33,6 +44,12 @@ def upload_file():
 
 @app.route("/result", methods=["GET"])
 def read_result():
+    """
+    Displays the generated result from image processing.
+
+    Returns:
+        html for viewing result page
+    """
     if "result" not in session:
         return redirect(f"{url_for('index', _anchor="upload")}")
     with open(session["result"]) as file:
@@ -42,6 +59,11 @@ def read_result():
 
 @app.route("/download", methods=["POST"])
 def download_file():
+    """Sends the resulting file to user for downloading
+
+    Returns:
+        Resulting file
+    """
     buff = BytesIO()
     buff.write(request.form["file"].encode("utf-8"))
     buff.seek(0)

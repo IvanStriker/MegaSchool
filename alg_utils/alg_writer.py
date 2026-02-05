@@ -1,4 +1,3 @@
-from alg_utils.my_token import MyTokenType, MyToken
 from alg_utils.tree_maker import makeTree
 from model import scheme_scanner
 from alg_utils.my_token import *
@@ -10,6 +9,13 @@ TreeNode:
 
 
 def constructFromTree(tree: list, roots: list, path: str):
+    """Generates a structured txt document from a tree of special objects.
+
+    Args:
+        tree: List of special tree nodes
+        roots: List of root node
+        path: File path where the output algorithm will be written.
+    """
     file = open(path, "w")
     used = [False] * len(tree)
     actionNum = 1
@@ -22,8 +28,8 @@ def constructFromTree(tree: list, roots: list, path: str):
         if not tree[node][0].text:
             tree[node][0].text.append('')
         if token[0].typename == MyTokenType.BRANCHING and \
-            len(token[1]) > 0 and \
-            len(token[1][0][1]):
+                len(token[1]) > 0 and \
+                len(token[1][0][1]):
             file.write(" " * offset + f"{actionNum}. ЕСЛИ " + token[0].text[0] + " ТО {" + f" | {token[0].executor}\n")
             actionNum += 1
             offset += 2
@@ -57,10 +63,27 @@ def constructFromTree(tree: list, roots: list, path: str):
 
 
 def constructFromTokens(tokens: list[MyToken], path: str):
-    constructFromTree(*makeTree(tokens)[:2], path)
+    """
+    Converts a list of tokens into a tree structure and generates txt output.
+
+    Args:
+        tokens: List of MyToken objects representing geometrical objects of a scheme
+        path: Output file path for the generated algorithm.
+    """
+    tree, roots = makeTree(tokens)[:2]
+    constructFromTree(tree, roots, path)
 
 
 def constructFromImage(inputPath: str, outputPath2: str):
+    """End-to-end pipeline: scans an image and generates algorithm documentation.
+
+    Loads a flowchart image, detects graphical elements and text,
+    reconstructs the algorithm structure, and outputs formatted markdown.
+
+    Args:
+        inputPath: Path to the input flowchart image file.
+        outputPath2: Path where the generated markdown file will be saved.
+    """
     if not scheme_scanner.model:
         scheme_scanner.prepareModel()
     res = scheme_scanner.scan(inputPath)

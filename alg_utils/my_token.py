@@ -2,6 +2,14 @@ from enum import Enum
 
 
 class MyPoint:
+    """
+    Represents 2 coordinates: x and y.
+
+    Attributes:
+        x: Horizontal coordinate.
+        y: Vertical coordinate.
+    """
+
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
@@ -14,6 +22,15 @@ class MyPoint:
 
 
 class MyBaseShape:
+    """
+    Defines a rectangle describing some token's position and size.
+
+    Attributes:
+        leftBottom: Lower-left corner point of the rectangle.
+        width: Horizontal length of the rectangle.
+        height: Vertical length of the rectangle.
+    """
+
     def __init__(self, p1: MyPoint, p2: MyPoint):
         leftBottom = MyPoint(min(p1.x, p2.x), min(p1.y, p2.y))
         rightTop = MyPoint(max(p1.x, p2.x), max(p1.y, p2.y))
@@ -23,6 +40,15 @@ class MyBaseShape:
         self.height = rightTop.y - leftBottom.y
 
     def distanceTo(self, other: "MyBaseShape") -> float:
+        """
+        Calculates the Manhattan distance between two shapes.
+
+        Args:
+            other: Another MyBaseShape to calculate distance to
+
+        Returns:
+            Manhattan distance
+        """
         dist = 0
 
         # 1. x
@@ -40,6 +66,15 @@ class MyBaseShape:
         return dist
 
     def getSharedPartWith(self, other: "MyBaseShape") -> float:
+        """
+        Calculates the common area of two shapes.
+
+        Args:
+            other: Another MyBaseShape to check overlap with.
+
+        Returns:
+            Common area or 0 if shapes don't intersect.
+        """
         dist = 0
 
         # 1. x
@@ -74,6 +109,9 @@ class MyBaseShape:
 
 
 class MyTokenType(Enum):
+    """
+    Keeps all supported token classes.
+    """
     DOCUMENT = 0
     END = 1
     MAIL = 2
@@ -91,11 +129,21 @@ class MyTokenType(Enum):
 
 
 class MyToken:
+    """
+    Represents a detected geometrical element of a scheme.
+
+    Attributes:
+        rect: Bounding box describing the token's position and size.
+        typename: token's class.
+        text: List of text strings that belong to the token.
+        executor: executor's name
+    """
+
     def __init__(self,
                  rect: MyBaseShape,
                  typename: MyTokenType,
-                 text: list[str]|None = None,
-                 executor: str|None = None):
+                 text: list[str] | None = None,
+                 executor: str | None = None):
         self.rect = rect
         self.typename = typename
         self.text = text
@@ -104,10 +152,20 @@ class MyToken:
             self.text = []
 
     def getClosest(self, items, f=lambda x: x):
+        """
+        Finds the geometrically nearest item from a collection.
+
+        Args:
+            items: Collection of items to search through.
+            f: Optional function to extract MyBaseShape from items.
+
+        Returns:
+            The closest item.
+        """
         resDist = 10 ** 10
         resItem = None
 
-        print(items)
+        # print(items)
 
         for item in items:
             if f(item) == self:
