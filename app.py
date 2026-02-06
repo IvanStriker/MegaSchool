@@ -1,5 +1,6 @@
 import uuid
 import os
+import tempfile
 from io import BytesIO
 
 from flask import Flask, render_template, redirect, url_for, request, session, send_file
@@ -8,7 +9,7 @@ from model.scheme_scanner import prepareModel
 from alg_utils.alg_writer import constructFromImage
 
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = "uploads"
+app.config["UPLOAD_FOLDER"] = tempfile.gettempdir()
 app.config["SECRET_KEY"] = uuid.uuid4().bytes
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -37,8 +38,15 @@ def upload_file():
     file = request.files["file"]
     path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
     file.save(path)
-    constructFromImage(path, "./writtenAlgs/1.md")
-    session["result"] = "./writtenAlgs/1.md"
+
+    path2 = os.path.join(app.config["UPLOAD_FOLDER"], "algs", "1.txt")
+    directory = os.path.dirname(path2)
+
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+
+    constructFromImage(path, path2)
+    session["result"] = path2
     return redirect(url_for("read_result"))
 
 
