@@ -54,9 +54,7 @@ def pinText(tokens: list[MyToken]):
             text.getClosest(arrows).text.append(text.text[0])
         else:
             got = text.getClosest(classics)
-            print(got.typename, file=sys.stderr)
             got.text.append(text.text[0])
-            print(got.text, file=sys.stderr)
 
     special = [token for token in tokens
                if token.typename in [MyTokenType.DOCUMENT, MyTokenType.MAIL,

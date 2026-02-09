@@ -16,7 +16,7 @@ def prepareModel():
     model = YOLO(curDir + '/for_colab_3/runs/detect/train/weights/best.pt')
 
 
-def scan(path: str):
+def scan(file):
     """
     Performs complete scheme image processing and retrieves tokens.
 
@@ -28,12 +28,11 @@ def scan(path: str):
         classes and texts.
     """
     global model
-    image = cv2.imread(path)
-    results = model(image)[0]
-    original = image.copy()
+    results = model(file)[0]
+    original = file.copy()
     detections = sv.Detections.from_ultralytics(results).with_nms(threshold=0.2)
     ocr_reader = easyocr.Reader(['ru', 'en'])
-    return getTokens(image, original, detections, ocr_reader)
+    return getTokens(file, original, detections, ocr_reader)
 
 
 def getTokens(image, original, detections, ocr_reader):
