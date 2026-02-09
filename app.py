@@ -3,6 +3,9 @@ import os
 import tempfile
 from io import BytesIO
 
+import cv2
+import numpy as np
+from PIL import Image
 from flask import Flask, render_template, redirect, url_for, request, session, send_file
 
 from model.scheme_scanner import prepareModel
@@ -11,6 +14,7 @@ from alg_utils.alg_writer import constructFromImage
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = tempfile.gettempdir()
 app.config["SECRET_KEY"] = uuid.uuid4().bytes
+
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
@@ -36,17 +40,11 @@ def upload_file():
         HTTP redirect to the read_result route.
     """
     file = request.files["file"]
-    path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-    file.save(path)
+    file = np.frombuffer(file.stream.read(), np.uint8)
+    file = cv2.imdecode(file, cv2.IMREAD_COLOR)
 
-    path2 = os.path.join(app.config["UPLOAD_FOLDER"], "algs", "1.txt")
-    directory = os.path.dirname(path2)
-
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
-
-    constructFromImage(path, path2)
-    session["result"] = path2
+    session["result"] = (ans := constructFromImage(file)).read()
+    ans.close()
     return redirect(url_for("read_result"))
 
 
@@ -60,8 +58,7 @@ def read_result():
     """
     if "result" not in session:
         return redirect(f"{url_for('index', _anchor="upload")}")
-    with open(session["result"]) as file:
-        text = file.read()
+    text = session["result"]
     return render_template("result.html", file=text)
 
 

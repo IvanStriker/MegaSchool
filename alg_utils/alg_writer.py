@@ -1,3 +1,5 @@
+from io import StringIO
+
 from alg_utils.tree_maker import makeTree
 from model import scheme_scanner
 from alg_utils.my_token import *
@@ -8,15 +10,8 @@ TreeNode:
 """
 
 
-def constructFromTree(tree: list, roots: list, path: str):
-    """Generates a structured txt document from a tree of special objects.
-
-    Args:
-        tree: List of special tree nodes
-        roots: List of root node
-        path: File path where the output algorithm will be written.
-    """
-    file = open(path, "w")
+def constructFromTree(tree: list, roots: list):
+    file = StringIO()
     used = [False] * len(tree)
     actionNum = 1
     offset = 0
@@ -59,34 +54,19 @@ def constructFromTree(tree: list, roots: list, path: str):
     while i < len(roots):
         dfs(roots[i])
         i += 1
-    file.close()
+    file.seek(0)
+    return file
 
 
-def constructFromTokens(tokens: list[MyToken], path: str):
-    """
-    Converts a list of tokens into a tree structure and generates txt output.
-
-    Args:
-        tokens: List of MyToken objects representing geometrical objects of a scheme
-        path: Output file path for the generated algorithm.
-    """
+def constructFromTokens(tokens: list[MyToken]):
     tree, roots = makeTree(tokens)[:2]
-    constructFromTree(tree, roots, path)
+    return constructFromTree(tree, roots)
 
 
-def constructFromImage(inputPath: str, outputPath2: str):
-    """End-to-end pipeline: scans an image and generates algorithm documentation.
-
-    Loads a flowchart image, detects graphical elements and text,
-    reconstructs the algorithm structure, and outputs formatted markdown.
-
-    Args:
-        inputPath: Path to the input flowchart image file.
-        outputPath2: Path where the generated markdown file will be saved.
-    """
+def constructFromImage(file):
     if not scheme_scanner.model:
         scheme_scanner.prepareModel()
-    res = scheme_scanner.scan(inputPath)
+    res = scheme_scanner.scan(file)
     tokens = []
     for token in res:
         tokens.append(MyToken(
@@ -97,4 +77,4 @@ def constructFromImage(inputPath: str, outputPath2: str):
             MyTokenType(int(token["class"])),
             [token["text"]] if len(token["text"]) else []
         ))
-    constructFromTokens(tokens, outputPath2)
+    return constructFromTokens(tokens)
